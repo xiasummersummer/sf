@@ -1,0 +1,266 @@
+<template>
+  <div class="nologinbox">
+    <header class="header">
+      <span class="iconfont icon-xiazai6 returngo" @click="gohome"></span>
+      <p class="password" @click="passlogin">密码登录</p>
+      <span class="iconfont icon-jiantou righticon"></span>
+    </header>
+    <div class="contentbox">
+      <div class="phonelogin">
+        手机短信登录
+      </div>
+      <div class="firstlogin">
+        首次登陆会自动创建账户
+      </div>
+      <div class="loginfo">
+        <van-cell-group>
+        <van-field
+          v-model="username"
+          clearable
+          placeholder="请输入用户名" class="username">
+        <van-icon slot="button" color="green" size="24px" />
+        </van-field>
+
+        <van-field
+          v-model="password"
+          type="number"
+          clearable
+          placeholder="请输入密码" class="password">
+          <van-icon slot="button" color="green" size="24px"  />
+        </van-field>
+          <!-- <div class="getcode" placeholder="请输入密码">
+            <input type="number">
+          </div> -->
+          <div class="getcode" @click="sendCode">获取验证码</div>
+      </van-cell-group>
+          <div class="checkbox">
+            <!-- <van-icon slot="button" color="green" size="24px" :name="checkicon" class="ckeckname"/> -->
+            <span class="circle"></span>
+            <span>同意</span>
+            <a href="">顺丰优选协议</a>
+          </div>
+          <van-button type="info" class="suresub" @click="login" size="large">登录</van-button>
+      </div>
+      <div class="othertype">
+        <div class="other">
+          <div class="left"></div>
+          <div @click="otherlogin">其他方式登录</div>
+          <div class="right"></div>
+        </div>
+        <div class="type">
+          <img src="@/assets/images/sflogo.png" alt="">
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import Vue from 'vue'
+import { Toast } from 'vant'
+import axios from 'axios'
+import { mapState, mapGetters } from 'vuex'
+Vue.use(Toast)
+export default {
+  data () {
+    return {
+      username: '17621960664',
+      password: '',
+      radio: '1'
+    }
+  },
+  methods: {
+    gohome () {
+      this.$router.push('/')
+    },
+    passlogin () {
+      this.$router.push('/user/msglogin')
+    },
+    otherlogin () {},
+    sendCode () {
+      // axios.get(`http://www.daxunxun.com/users/sendCode?tel=${this.username}`)
+      //   .then(res => {
+      //     console.log(res.data)
+      //     if (res.data === 1) {
+      //       Toast('该手机号已经被注册')
+      //     } else if (res.data === 0) {
+      //       Toast('获取验证码失败')
+      //     } else {
+      //       // console.log(res.data)
+      //       this.code = res.data.code
+      //     }
+      //   })
+    },
+    login () {
+      axios.post('https://www.daxunxun.com/users/login',{
+        username: this.username,
+        password: this.password
+      }).then(res => {
+        if (res.data === 0) {
+          Toast('登陆失败')
+        } else if (res.data === 2) {
+          Toast('没有该用户')
+        } else if (res.data === -1) {
+          Toast('密码错误')
+        } else {
+          Toast('登陆成功')
+          // 有的需要注册即为登陆成功，跳转到首页
+          // localStorage.setItem('isLogin', 'ok')
+          // 拿到状态管理器 this.$store，提交mutation，mutation实在store.js中定义的
+          this.$store.commit('changeLoginstate', 'ok')
+          this.$router.push('/login')
+          console.log(this.$store)
+        }
+      })
+    }
+  },
+  computed: {
+    checkicon () {
+
+    },
+    // ...mapState({
+    //   loginState (state) {
+    //     console.log(this.$store.state)
+    //   }
+    // })
+  }
+}
+</script>
+
+<style lang="scss">
+@import '@/lib/reset.scss';
+
+html, body, #app, .box {
+  @include rect(100%, 100%);
+}
+
+#app, .box {
+  .container {
+    @include rect(100%, 100%);
+    // @include flexbox();
+    .content {
+      .nologinbox {
+        @include flexbox();
+        @include flex-direction(column);
+        @include rect(100%, 100%);
+        .header {
+      line-height: .8rem;
+      @include rect(100%, .8rem);
+      .returngo {
+        float: left;
+        margin-left: .3rem;
+      }
+      .password {
+        text-align: right;
+        float: left;
+        @include rect(80%, .8rem);
+        font-size: .18rem;
+      }
+      .righticon {
+        float: right;
+        margin-right: .1rem;
+      }
+    }
+    .contentbox {
+      @include flex();
+      @include rect(100%, auto);
+      padding:0 .3rem;
+        .phonelogin {
+          @include rect(100%, .3rem);
+          line-height: .3rem;
+          font-size: .18rem;
+          font-weight: 600;
+        }
+        .firstlogin {
+
+        }
+        .loginfo {
+          margin-top: .2rem;
+          .van-cell-group {
+            margin: 0;
+            padding: 0;
+            font-size: .16rem;
+            // position: relative;
+            .van-field__body {
+            line-height: .4rem;
+              .van-icon {
+                font-size: .22rem;
+              }
+            }
+            .van-cell {
+              border-top: none;
+              padding-top: 0;
+            }
+            .password {
+              @include rect(2rem, .4rem);
+              // padding-left:0;
+            }
+            .getcode {
+              position:absolute;
+              right: .1rem;
+              bottom: .1rem;
+              @include text-color(#31c27c);
+            }
+          }
+          .checkbox {
+            margin-top: .2rem;
+            padding-left: .07rem;
+            .circle {
+              width: .12rem;
+              height: .12rem;
+              border :1px solid #000;
+              display: inline-block;
+              margin-right: .1rem;
+              border-radius: 50%;
+            }
+            a {
+              @include color(#000);
+            }
+          }
+          .suresub {
+            margin-top:.1rem;
+            border: none;
+            background-color: rgb(49, 194, 124);
+          }
+        }
+        .othertype {
+          margin-top: .5rem;
+          text-align: center;
+          .other {
+            height: .3rem;
+            line-height:.3rem;
+            margin-left: .4rem;
+            margin-bottom: .2rem;
+            div {
+              float: left;
+            }
+          .left {
+            @include rect(.8rem, .01rem);
+            background-color: #000;
+            margin-top: .15rem;
+          }
+          .right {
+            @include rect(.8rem, .01rem);
+            margin-top: .15rem;
+            background-color: #000;
+          }
+          }
+        }
+    }
+      }
+    }
+  }
+  .footer {
+    ul {
+      li{
+        span {
+        }
+        p {
+        }
+        &.router-link-active {
+        }
+      }
+    }
+  }
+}
+</style>
